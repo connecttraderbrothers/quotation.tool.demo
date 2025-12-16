@@ -249,7 +249,6 @@ function updateQuoteTable() {
 function previewQuote() {
     var clientName = document.getElementById('clientName').value || '[Client Name]';
     var clientPhone = document.getElementById('clientPhone').value;
-    var projectName = document.getElementById('projectName').value || '[Project Name]';
     var projectAddress = document.getElementById('projectAddress').value || '[Project Address]';
     var customerId = document.getElementById('customerId').value || 'N/A';
     var depositPercent = document.getElementById('depositPercent').value || '30';
@@ -327,7 +326,6 @@ function previewQuote() {
         <div class="client-info-preview">
           <h3>${clientName}</h3>
           <p>
-            ${projectName}<br>
             ${projectAddress}${clientPhone ? '<br>' + clientPhone : ''}
           </p>
         </div>
