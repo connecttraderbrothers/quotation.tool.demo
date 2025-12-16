@@ -266,93 +266,153 @@ function previewQuote() {
     var vat = subtotal * 0.20;
     var total = subtotal + vat;
 
-    var categories = {};
+    var previewHtml = `
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      .estimate-container-preview { font-family: Arial, sans-serif; background: white; padding: 30px; max-width: 100%; }
+      .header-preview { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #333; }
+      .company-info-preview { flex: 1; }
+      .company-name-preview { font-size: 24px; font-weight: bold; margin-bottom: 10px; color: #333; }
+      .company-name-preview .highlight-preview { background: linear-gradient(135deg, #bc9c22, #d4af37); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+      .company-details-preview { font-size: 11px; line-height: 1.6; color: #666; }
+      .logo-preview { width: 120px; height: auto; }
+      .estimate-banner-preview { background: linear-gradient(135deg, #bc9c22, #d4af37); padding: 15px 20px; margin-bottom: 25px; display: inline-block; font-weight: bold; font-size: 16px; color: white; }
+      .info-section-preview { display: flex; justify-content: space-between; margin-bottom: 30px; }
+      .client-info-preview { flex: 1; }
+      .client-info-preview h3 { font-size: 12px; color: #666; margin-bottom: 8px; }
+      .client-info-preview p { font-size: 13px; line-height: 1.5; color: #333; }
+      .estimate-details-preview { flex: 0 0 250px; }
+      .details-table-preview { width: 100%; border-collapse: collapse; }
+      .details-table-preview td { padding: 8px 10px; font-size: 13px; }
+      .detail-label-preview { color: #666; text-align: left; width: 120px; }
+      .detail-value-preview { font-weight: bold; color: #333; text-align: left; }
+      .expiry-date-preview { background: linear-gradient(135deg, #bc9c22, #d4af37); padding: 5px 10px; display: inline-block; color: white; font-weight: bold; }
+      .items-table-preview { width: 100%; border-collapse: collapse; margin: 30px 0; }
+      .items-table-preview thead { background: #f5f5f5; }
+      .items-table-preview th { padding: 12px; text-align: left; font-size: 12px; font-weight: bold; color: #333; border-bottom: 2px solid #ddd; }
+      .items-table-preview th:nth-child(2), .items-table-preview th:nth-child(3), .items-table-preview th:nth-child(4) { text-align: right; width: 100px; }
+      .items-table-preview td { padding: 12px; font-size: 13px; border-bottom: 1px solid #eee; color: #333; }
+      .items-table-preview td:nth-child(2), .items-table-preview td:nth-child(3), .items-table-preview td:nth-child(4) { text-align: right; }
+      .notes-section-preview { margin: 30px 0; padding: 20px; background: #f9f9f9; border-left: 3px solid #bc9c22; }
+      .notes-section-preview h3 { font-size: 13px; margin-bottom: 10px; color: #333; }
+      .notes-section-preview ol { margin-left: 20px; font-size: 12px; line-height: 1.8; color: #666; }
+      .totals-section-preview { margin-top: 30px; display: flex; justify-content: flex-end; }
+      .totals-box-preview { width: 300px; }
+      .total-row-preview { display: flex; justify-content: space-between; padding: 10px 15px; font-size: 13px; }
+      .total-row-preview.subtotal { border-top: 1px solid #ddd; }
+      .total-row-preview.vat { color: #666; }
+      .total-row-preview.final { background: linear-gradient(135deg, #bc9c22, #d4af37); color: white; font-weight: bold; font-size: 16px; border-top: 2px solid #333; margin-top: 5px; }
+      .footer-note-preview { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; font-size: 11px; color: #666; font-style: italic; }
+      .thank-you-preview { margin-top: 15px; font-weight: bold; color: #333; font-size: 12px; }
+    </style>
+    <div class="estimate-container-preview">
+      <div class="header-preview">
+        <div class="company-info-preview">
+          <div class="company-name-preview">TR<span class="highlight-preview">A</span>DER BROTHERS LTD</div>
+          <div class="company-details-preview">
+            8 Craigour Terrace<br>
+            Edinburgh, EH17 7PB<br>
+            07979309957<br>
+            traderbrotherslimited@gmail.com
+          </div>
+        </div>
+        <div class="logo-container-preview">
+          <img src="https://github.com/infotraderbrothers-lgtm/traderbrothers-assets-logo/blob/main/Trader%20Brothers.png?raw=true" alt="Trader Brothers Logo" class="logo-preview">
+        </div>
+      </div>
+
+      <div class="estimate-banner-preview">Estimate for</div>
+
+      <div class="info-section-preview">
+        <div class="client-info-preview">
+          <h3>${clientName}</h3>
+          <p>
+            ${projectName}<br>
+            ${projectAddress}${clientPhone ? '<br>' + clientPhone : ''}
+          </p>
+        </div>
+
+        <div class="estimate-details-preview">
+          <table class="details-table-preview">
+            <tr>
+              <td class="detail-label-preview">Date:</td>
+              <td class="detail-value-preview">${quoteDate}</td>
+            </tr>
+            <tr>
+              <td class="detail-label-preview">Estimate #:</td>
+              <td class="detail-value-preview">${estNumber}</td>
+            </tr>
+            <tr>
+              <td class="detail-label-preview">Customer Ref:</td>
+              <td class="detail-value-preview">${customerId}</td>
+            </tr>
+            <tr>
+              <td class="detail-label-preview">Expiry Date:</td>
+              <td><span class="expiry-date-preview">${expiryDate}</span></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <table class="items-table-preview">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Qty</th>
+            <th>Unit price</th>
+            <th>Total price</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
     for (var i = 0; i < items.length; i++) {
         var item = items[i];
-        if (!categories[item.category]) {
-            categories[item.category] = [];
-        }
-        categories[item.category].push(item);
+        previewHtml += `
+          <tr>
+            <td>${item.description}</td>
+            <td>${item.quantity}</td>
+            <td>£${item.unitPrice.toFixed(2)}</td>
+            <td>£${item.lineTotal.toFixed(2)}</td>
+          </tr>`;
     }
 
-    var previewHtml = '<div class="preview-content">';
-    previewHtml += '<div class="preview-header">';
-    previewHtml += '<div class="preview-logo">TB</div>';
-    previewHtml += '<div class="preview-company-info">';
-    previewHtml += '<div class="preview-company">TRADER BROTHERS LTD</div>';
-    previewHtml += '<div>8 Craigour Terrace</div>';
-    previewHtml += '<div>Edinburgh, EH17 7PB</div>';
-    previewHtml += '<div>📞: 07979309957</div>';
-    previewHtml += '<div>✉: traderbrotherslimited@gmail.com</div>';
-    previewHtml += '</div></div>';
+    previewHtml += `
+        </tbody>
+      </table>
 
-    previewHtml += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0; padding-top: 10px; border-top: 1px solid #ddd;">';
-    previewHtml += '<div>';
-    previewHtml += '<div style="font-weight: bold; margin-bottom: 8px;">Estimate for</div>';
-    previewHtml += '<div>' + clientName + '</div>';
-    previewHtml += '<div>' + projectName + '</div>';
-    previewHtml += '<div>' + projectAddress + '</div>';
-    if (clientPhone) previewHtml += '<div>' + clientPhone + '</div>';
-    previewHtml += '</div>';
-    previewHtml += '<div style="text-align: right;">';
-    previewHtml += '<div><strong>Date</strong> ' + quoteDate + '</div>';
-    previewHtml += '<div><strong>Estimate #</strong> ' + estNumber + '</div>';
-    previewHtml += '<div><strong>Customer ID</strong> ' + customerId + '</div>';
-    previewHtml += '<div><strong>Expiry date</strong> ' + expiryDate + '</div>';
-    previewHtml += '</div>';
-    previewHtml += '</div>';
+      <div class="notes-section-preview">
+        <h3>Notes:</h3>
+        <ol>
+          <li>Estimate valid for 31 days</li>
+          <li>Payment of ${depositPercent}% is required to secure start date</li>
+          <li>Pending to be supplied by customer</li>
+          <li>Any extras to be charged accordingly</li>
+        </ol>
+      </div>
 
-    previewHtml += '<table class="preview-table">';
-    previewHtml += '<thead><tr>';
-    previewHtml += '<th style="width: 55%;">Description</th>';
-    previewHtml += '<th style="text-align: center; width: 10%;">Qty</th>';
-    previewHtml += '<th style="text-align: right; width: 17%;">Unit price</th>';
-    previewHtml += '<th style="text-align: right; width: 18%;">Total price</th>';
-    previewHtml += '</tr></thead>';
-    previewHtml += '<tbody>';
+      <div class="totals-section-preview">
+        <div class="totals-box-preview">
+          <div class="total-row-preview subtotal">
+            <span>Subtotal</span>
+            <span>£${subtotal.toFixed(2)}</span>
+          </div>
+          <div class="total-row-preview vat">
+            <span>VAT</span>
+            <span>£${vat.toFixed(2)}</span>
+          </div>
+          <div class="total-row-preview final">
+            <span>Total</span>
+            <span>£${total.toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
 
-    for (var category in categories) {
-        previewHtml += '<tr class="preview-category">';
-        previewHtml += '<td colspan="4"><strong>' + category + '</strong></td>';
-        previewHtml += '</tr>';
-
-        var categoryItems = categories[category];
-        for (var k = 0; k < categoryItems.length; k++) {
-            var item = categoryItems[k];
-            previewHtml += '<tr>';
-            previewHtml += '<td>' + item.description + '</td>';
-            previewHtml += '<td style="text-align: center;">' + item.quantity + '</td>';
-            previewHtml += '<td style="text-align: right;">£' + item.unitPrice.toFixed(2) + '</td>';
-            previewHtml += '<td style="text-align: right;">£' + item.lineTotal.toFixed(2) + '</td>';
-            previewHtml += '</tr>';
-        }
-    }
-
-    previewHtml += '</tbody></table>';
-
-    previewHtml += '<div style="margin-top: 15px; font-size: 10px;">';
-    previewHtml += '<div style="margin-bottom: 10px;"><strong>Notes:</strong></div>';
-    previewHtml += '<div>1. Estimate valid for 31 days</div>';
-    previewHtml += '<div>2. Deposit of ' + depositPercent + '% is required to secure start date</div>';
-    previewHtml += '<div>3. Extra works to be charged accordingly</div>';
-    var customNotes = document.getElementById('customNotes').value;
-    if (customNotes) {
-        previewHtml += '<div style="margin-top: 8px;">4. ' + customNotes + '</div>';
-    }
-    previewHtml += '</div>';
-
-    previewHtml += '<div style="text-align: right; margin-top: 15px; font-size: 10px;">';
-    previewHtml += '<div style="margin-bottom: 3px;"><strong>Subtotal</strong> £' + subtotal.toFixed(2) + '</div>';
-    previewHtml += '<div style="margin-bottom: 3px;"><strong>VAT</strong> £' + vat.toFixed(2) + '</div>';
-    previewHtml += '<div style="font-size: 12px; font-weight: bold; padding-top: 5px; border-top: 1px solid #ddd;">£' + total.toFixed(2) + '</div>';
-    previewHtml += '</div>';
-
-    previewHtml += '<div style="margin-top: 15px; font-size: 8px; border-top: 1px solid #ddd; padding-top: 8px;">';
-    previewHtml += 'If you have any questions about this estimate, please contact traderbrotherslimited@gmail.com, or 07979309957.<br>';
-    previewHtml += '<strong>Thank you for your business</strong>';
-    previewHtml += '</div>';
-
-    previewHtml += '</div>';
+      <div class="footer-note-preview">
+        If you have any questions about this estimate, please contact<br>
+        Trader Brothers on 07448835577
+        <div class="thank-you-preview">Thank you for your business</div>
+      </div>
+    </div>`;
 
     document.getElementById('previewBody').innerHTML = previewHtml;
     document.getElementById('previewModal').style.display = 'block';
