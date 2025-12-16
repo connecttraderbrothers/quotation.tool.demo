@@ -5,7 +5,6 @@ const PDFSHIFT_API_KEY = 'sk_baa46c861371ec5f60ab2e83221fdac1ccce517b';
 function generateCompleteHTML() {
     var clientName = document.getElementById('clientName').value || '[Client Name]';
     var clientPhone = document.getElementById('clientPhone').value;
-    var projectName = document.getElementById('projectName').value || '[Project Name]';
     var projectAddress = document.getElementById('projectAddress').value || '[Project Address]';
     var customerId = document.getElementById('customerId').value || 'N/A';
     var depositPercent = document.getElementById('depositPercent').value || '30';
@@ -294,7 +293,6 @@ function generateCompleteHTML() {
         <div class="client-info">
           <h3>${clientName}</h3>
           <p>
-            ${projectName}<br>
             ${projectAddress}${clientPhone ? '<br>' + clientPhone : ''}
           </p>
         </div>
