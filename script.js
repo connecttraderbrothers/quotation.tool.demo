@@ -2,6 +2,7 @@ var items = [];
 var currentRateType = 'job';
 var estimateNumber = 1;
 
+// Edinburgh 2025 standard trade rates
 var tradeRates = {
     'Downtakings': { hourly: 30, daily: 220, job: 0 },
     'General Building': { hourly: 30, daily: 230, job: 0 },
@@ -9,6 +10,7 @@ var tradeRates = {
     'Carpentry': { hourly: 32, daily: 240, job: 0 },
     'Joinery': { hourly: 32, daily: 240, job: 0 },
     'Electrical': { hourly: 45, daily: 320, job: 200 },
+    'Electricals': { hourly: 45, daily: 320, job: 200 },
     'Plumbing': { hourly: 45, daily: 300, job: 200 },
     'Gas work/Plumbing': { hourly: 50, daily: 340, job: 250 },
     'Plastering': { hourly: 30, daily: 240, job: 0 },
@@ -29,6 +31,7 @@ var tradeRates = {
     'Materials': { hourly: 0, daily: 0, job: 0 }
 };
 
+// Load estimate counter
 if (localStorage.getItem('traderBrosEstimateCount')) {
     estimateNumber = parseInt(localStorage.getItem('traderBrosEstimateCount')) + 1;
 }
@@ -38,6 +41,7 @@ function updateEstimateCounter() {
     document.getElementById('estimateCounter').textContent = '#' + String(estimateNumber).padStart(4, '0');
 }
 
+// Auto-generate Customer ID from client name
 document.getElementById('clientName').addEventListener('input', function() {
     var name = this.value.trim();
     if (name) {
@@ -61,6 +65,7 @@ document.getElementById('clientName').addEventListener('input', function() {
     }
 });
 
+// Trade category change handler
 document.getElementById('tradeCategory').addEventListener('change', function() {
     var selectedTrade = this.value;
     var rateInfo = document.getElementById('tradeRateInfo');
@@ -108,6 +113,7 @@ function updatePriceFromTrade() {
     }
 }
 
+// Rate type selector
 document.querySelectorAll('.rate-type-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
         document.querySelectorAll('.rate-type-btn').forEach(function(b) {
@@ -243,6 +249,7 @@ function updateQuoteTable() {
 function previewQuote() {
     var clientName = document.getElementById('clientName').value || '[Client Name]';
     var clientPhone = document.getElementById('clientPhone').value;
+    var projectName = document.getElementById('projectName').value || '[Project Name]';
     var projectAddress = document.getElementById('projectAddress').value || '[Project Address]';
     var customerId = document.getElementById('customerId').value || 'N/A';
     var depositPercent = document.getElementById('depositPercent').value || '30';
@@ -259,90 +266,90 @@ function previewQuote() {
     var vat = subtotal * 0.20;
     var total = subtotal + vat;
 
-    var previewHtml = '<div class="estimate-container">';
-    
-    // Header matching template
-    previewHtml += '<div class="preview-header">';
-    previewHtml += '<div class="company-info">';
-    previewHtml += '<div class="company-name">TR<span class="highlight">A</span>DER BROTHERS LTD</div>';
-    previewHtml += '<div class="company-details">';
-    previewHtml += '8 Craigour Terrace<br>';
-    previewHtml += 'Edinburgh, EH17 7PB<br>';
-    previewHtml += '07979309957<br>';
-    previewHtml += 'traderbrotherslimited@gmail.com';
-    previewHtml += '</div></div>';
-    previewHtml += '<div class="logo-container">';
-    previewHtml += '<img src="https://github.com/infotraderbrothers-lgtm/traderbrothers-assets-logo/blob/main/Trader%20Brothers.png?raw=true" alt="Trader Brothers Logo">';
-    previewHtml += '</div></div>';
-
-    // Estimate banner
-    previewHtml += '<div class="estimate-banner">Estimate for</div>';
-
-    // Info section
-    previewHtml += '<div class="info-section">';
-    previewHtml += '<div class="client-info">';
-    previewHtml += '<h3>' + clientName + '</h3>';
-    previewHtml += '<p>';
-    previewHtml += projectAddress;
-    if (clientPhone) previewHtml += '<br>' + clientPhone;
-    previewHtml += '</p></div>';
-    
-    previewHtml += '<div class="estimate-details">';
-    previewHtml += '<table class="details-table">';
-    previewHtml += '<tr><td class="detail-label">Date:</td><td class="detail-value">' + quoteDate + '</td></tr>';
-    previewHtml += '<tr><td class="detail-label">Estimate #:</td><td class="detail-value">' + estNumber + '</td></tr>';
-    previewHtml += '<tr><td class="detail-label">Customer Ref:</td><td class="detail-value">' + customerId + '</td></tr>';
-    previewHtml += '<tr><td class="detail-label">Expiry Date:</td><td class="expiry-date">' + expiryDate + '</td></tr>';
-    previewHtml += '</table></div></div>';
-
-    // Items table
-    previewHtml += '<table class="items-table">';
-    previewHtml += '<thead><tr>';
-    previewHtml += '<th>Description</th>';
-    previewHtml += '<th>Qty</th>';
-    previewHtml += '<th>Unit price</th>';
-    previewHtml += '<th>Total price</th>';
-    previewHtml += '</tr></thead><tbody>';
-
+    var categories = {};
     for (var i = 0; i < items.length; i++) {
         var item = items[i];
-        previewHtml += '<tr>';
-        previewHtml += '<td>' + item.description + '</td>';
-        previewHtml += '<td>' + item.quantity + '</td>';
-        previewHtml += '<td>£' + item.unitPrice.toFixed(2) + '</td>';
-        previewHtml += '<td>£' + item.lineTotal.toFixed(2) + '</td>';
+        if (!categories[item.category]) {
+            categories[item.category] = [];
+        }
+        categories[item.category].push(item);
+    }
+
+    var previewHtml = '<div class="preview-content">';
+    previewHtml += '<div class="preview-header">';
+    previewHtml += '<div class="preview-logo">TB</div>';
+    previewHtml += '<div class="preview-company-info">';
+    previewHtml += '<div class="preview-company">TRADER BROTHERS LTD</div>';
+    previewHtml += '<div>8 Craigour Terrace</div>';
+    previewHtml += '<div>Edinburgh, EH17 7PB</div>';
+    previewHtml += '<div>📞: 07979309957</div>';
+    previewHtml += '<div>✉: traderbrotherslimited@gmail.com</div>';
+    previewHtml += '</div></div>';
+
+    previewHtml += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0; padding-top: 10px; border-top: 1px solid #ddd;">';
+    previewHtml += '<div>';
+    previewHtml += '<div style="font-weight: bold; margin-bottom: 8px;">Estimate for</div>';
+    previewHtml += '<div>' + clientName + '</div>';
+    previewHtml += '<div>' + projectName + '</div>';
+    previewHtml += '<div>' + projectAddress + '</div>';
+    if (clientPhone) previewHtml += '<div>' + clientPhone + '</div>';
+    previewHtml += '</div>';
+    previewHtml += '<div style="text-align: right;">';
+    previewHtml += '<div><strong>Date</strong> ' + quoteDate + '</div>';
+    previewHtml += '<div><strong>Estimate #</strong> ' + estNumber + '</div>';
+    previewHtml += '<div><strong>Customer ID</strong> ' + customerId + '</div>';
+    previewHtml += '<div><strong>Expiry date</strong> ' + expiryDate + '</div>';
+    previewHtml += '</div>';
+    previewHtml += '</div>';
+
+    previewHtml += '<table class="preview-table">';
+    previewHtml += '<thead><tr>';
+    previewHtml += '<th style="width: 55%;">Description</th>';
+    previewHtml += '<th style="text-align: center; width: 10%;">Qty</th>';
+    previewHtml += '<th style="text-align: right; width: 17%;">Unit price</th>';
+    previewHtml += '<th style="text-align: right; width: 18%;">Total price</th>';
+    previewHtml += '</tr></thead>';
+    previewHtml += '<tbody>';
+
+    for (var category in categories) {
+        previewHtml += '<tr class="preview-category">';
+        previewHtml += '<td colspan="4"><strong>' + category + '</strong></td>';
         previewHtml += '</tr>';
+
+        var categoryItems = categories[category];
+        for (var k = 0; k < categoryItems.length; k++) {
+            var item = categoryItems[k];
+            previewHtml += '<tr>';
+            previewHtml += '<td>' + item.description + '</td>';
+            previewHtml += '<td style="text-align: center;">' + item.quantity + '</td>';
+            previewHtml += '<td style="text-align: right;">£' + item.unitPrice.toFixed(2) + '</td>';
+            previewHtml += '<td style="text-align: right;">£' + item.lineTotal.toFixed(2) + '</td>';
+            previewHtml += '</tr>';
+        }
     }
 
     previewHtml += '</tbody></table>';
 
-    // Notes section
-    previewHtml += '<div class="notes-section">';
-    previewHtml += '<h3>Notes:</h3>';
-    previewHtml += '<ol>';
-    previewHtml += '<li>Estimate valid for 31 days</li>';
-    previewHtml += '<li>Payment of ' + depositPercent + '% is required to secure start date</li>';
-    previewHtml += '<li>Pending to be supplied by customer</li>';
-    previewHtml += '<li>Any extras to be charged accordingly</li>';
+    previewHtml += '<div style="margin-top: 15px; font-size: 10px;">';
+    previewHtml += '<div style="margin-bottom: 10px;"><strong>Notes:</strong></div>';
+    previewHtml += '<div>1. Estimate valid for 31 days</div>';
+    previewHtml += '<div>2. Deposit of ' + depositPercent + '% is required to secure start date</div>';
+    previewHtml += '<div>3. Extra works to be charged accordingly</div>';
     var customNotes = document.getElementById('customNotes').value;
     if (customNotes) {
-        previewHtml += '<li>' + customNotes + '</li>';
+        previewHtml += '<div style="margin-top: 8px;">4. ' + customNotes + '</div>';
     }
-    previewHtml += '</ol></div>';
+    previewHtml += '</div>';
 
-    // Totals section
-    previewHtml += '<div class="totals-section">';
-    previewHtml += '<div class="totals-box">';
-    previewHtml += '<div class="total-row-preview subtotal"><span>Subtotal</span><span>£' + subtotal.toFixed(2) + '</span></div>';
-    previewHtml += '<div class="total-row-preview vat"><span>VAT</span><span>£' + vat.toFixed(2) + '</span></div>';
-    previewHtml += '<div class="total-row-preview final"><span>Total</span><span>£' + total.toFixed(2) + '</span></div>';
-    previewHtml += '</div></div>';
+    previewHtml += '<div style="text-align: right; margin-top: 15px; font-size: 10px;">';
+    previewHtml += '<div style="margin-bottom: 3px;"><strong>Subtotal</strong> £' + subtotal.toFixed(2) + '</div>';
+    previewHtml += '<div style="margin-bottom: 3px;"><strong>VAT</strong> £' + vat.toFixed(2) + '</div>';
+    previewHtml += '<div style="font-size: 12px; font-weight: bold; padding-top: 5px; border-top: 1px solid #ddd;">£' + total.toFixed(2) + '</div>';
+    previewHtml += '</div>';
 
-    // Footer note
-    previewHtml += '<div class="footer-note">';
-    previewHtml += 'If you have any questions about this estimate, please contact<br>';
-    previewHtml += 'Trader Brothers on 07448835577';
-    previewHtml += '<div class="thank-you">Thank you for your business</div>';
+    previewHtml += '<div style="margin-top: 15px; font-size: 8px; border-top: 1px solid #ddd; padding-top: 8px;">';
+    previewHtml += 'If you have any questions about this estimate, please contact traderbrotherslimited@gmail.com, or 07979309957.<br>';
+    previewHtml += '<strong>Thank you for your business</strong>';
     previewHtml += '</div>';
 
     previewHtml += '</div>';
