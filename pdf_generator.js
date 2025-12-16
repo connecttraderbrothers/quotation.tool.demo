@@ -22,15 +22,6 @@ function generateCompleteHTML() {
     var vat = subtotal * 0.20;
     var total = subtotal + vat;
 
-    var categories = {};
-    for (var i = 0; i < items.length; i++) {
-        var item = items[i];
-        if (!categories[item.category]) {
-            categories[item.category] = [];
-        }
-        categories[item.category].push(item);
-    }
-
     var styles = `
     <style>
       * {
@@ -38,248 +29,364 @@ function generateCompleteHTML() {
         padding: 0;
         box-sizing: border-box;
       }
+
       body {
         font-family: Arial, sans-serif;
-        background: white;
+        background: #f5f5f5;
         padding: 20px;
-        color: #333;
       }
+
+      .estimate-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 40px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+
       .header {
         display: flex;
-        justify-content: flex-start;
+        justify-content: space-between;
         align-items: flex-start;
         margin-bottom: 30px;
         padding-bottom: 20px;
         border-bottom: 2px solid #333;
-        gap: 15px;
       }
-      .logo {
-        width: 50px;
-        height: 50px;
-        background: #fbbf24;
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 20px;
-        color: #1a1a1a;
-        flex-shrink: 0;
-      }
+
       .company-info {
         flex: 1;
       }
+
       .company-name {
-        font-size: 18px;
+        font-size: 24px;
         font-weight: bold;
-        margin-bottom: 5px;
+        margin-bottom: 10px;
         color: #333;
       }
+
+      .company-name .highlight {
+        background: linear-gradient(135deg, #bc9c22, #d4af37);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
       .company-details {
-        font-size: 10px;
+        font-size: 11px;
         line-height: 1.6;
         color: #666;
       }
+
+      .logo {
+        width: 120px;
+        height: auto;
+      }
+
+      .estimate-banner {
+        background: linear-gradient(135deg, #bc9c22, #d4af37);
+        padding: 15px 20px;
+        margin-bottom: 25px;
+        display: inline-block;
+        font-weight: bold;
+        font-size: 16px;
+        color: white;
+      }
+
       .info-section {
         display: flex;
         justify-content: space-between;
         margin-bottom: 30px;
       }
+
       .client-info {
         flex: 1;
       }
+
       .client-info h3 {
-        font-size: 11px;
+        font-size: 12px;
         color: #666;
         margin-bottom: 8px;
-        font-weight: bold;
       }
+
       .client-info p {
-        font-size: 10px;
-        line-height: 1.6;
+        font-size: 13px;
+        line-height: 1.5;
         color: #333;
       }
+
       .estimate-details {
-        flex: 0 0 200px;
-        text-align: right;
+        flex: 0 0 250px;
       }
-      .estimate-details div {
-        font-size: 10px;
-        margin-bottom: 4px;
+
+      .details-table {
+        width: 100%;
+        border-collapse: collapse;
       }
-      .estimate-details strong {
+
+      .details-table td {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+
+      .detail-label {
         color: #666;
+        text-align: left;
+        width: 120px;
       }
+
+      .detail-value {
+        font-weight: bold;
+        color: #333;
+        text-align: left;
+      }
+
+      .expiry-date {
+        background: linear-gradient(135deg, #bc9c22, #d4af37);
+        padding: 5px 10px;
+        display: inline-block;
+        color: white;
+        font-weight: bold;
+      }
+
       .items-table {
         width: 100%;
         border-collapse: collapse;
-        margin: 20px 0;
+        margin: 30px 0;
       }
+
       .items-table thead {
         background: #f5f5f5;
       }
+
       .items-table th {
-        padding: 8px;
+        padding: 12px;
         text-align: left;
-        font-size: 10px;
+        font-size: 12px;
         font-weight: bold;
         color: #333;
-        border: 1px solid #ddd;
+        border-bottom: 2px solid #ddd;
       }
+
+      .items-table th:nth-child(2),
+      .items-table th:nth-child(3),
+      .items-table th:nth-child(4) {
+        text-align: right;
+        width: 100px;
+      }
+
       .items-table td {
-        padding: 6px 8px;
-        font-size: 9px;
-        border: 1px solid #ddd;
-        color: #555;
-      }
-      .category-row {
-        background: #fafafa;
-        font-weight: bold;
-      }
-      .category-row td {
-        font-size: 10px;
-        font-weight: 600;
+        padding: 12px;
+        font-size: 13px;
+        border-bottom: 1px solid #eee;
         color: #333;
       }
+
+      .items-table td:nth-child(2),
+      .items-table td:nth-child(3),
+      .items-table td:nth-child(4) {
+        text-align: right;
+      }
+
       .notes-section {
-        margin: 20px 0;
-        padding: 15px;
+        margin: 30px 0;
+        padding: 20px;
         background: #f9f9f9;
-        border-left: 3px solid #fbbf24;
+        border-left: 3px solid #bc9c22;
       }
+
       .notes-section h3 {
-        font-size: 10px;
-        margin-bottom: 8px;
+        font-size: 13px;
+        margin-bottom: 10px;
         color: #333;
       }
-      .notes-section div {
-        font-size: 9px;
-        line-height: 1.6;
+
+      .notes-section ol {
+        margin-left: 20px;
+        font-size: 12px;
+        line-height: 1.8;
         color: #666;
-        margin-bottom: 3px;
       }
+
       .totals-section {
-        margin-top: 20px;
+        margin-top: 30px;
         display: flex;
         justify-content: flex-end;
       }
+
       .totals-box {
-        width: 250px;
+        width: 300px;
       }
+
       .total-row {
         display: flex;
         justify-content: space-between;
-        padding: 6px 10px;
-        font-size: 10px;
+        padding: 10px 15px;
+        font-size: 13px;
       }
+
       .total-row.subtotal {
         border-top: 1px solid #ddd;
       }
+
+      .total-row.vat {
+        color: #666;
+      }
+
       .total-row.final {
-        background: #fbbf24;
-        color: #1a1a1a;
+        background: linear-gradient(135deg, #bc9c22, #d4af37);
+        color: white;
         font-weight: bold;
-        font-size: 12px;
+        font-size: 16px;
         border-top: 2px solid #333;
         margin-top: 5px;
       }
+
       .footer-note {
-        margin-top: 30px;
-        padding-top: 15px;
+        margin-top: 40px;
+        padding-top: 20px;
         border-top: 1px solid #ddd;
         text-align: center;
-        font-size: 8px;
+        font-size: 11px;
         color: #666;
+        font-style: italic;
       }
+
       .thank-you {
-        margin-top: 10px;
+        margin-top: 15px;
         font-weight: bold;
         color: #333;
-        font-size: 9px;
+        font-size: 12px;
+      }
+
+      @media print {
+        body {
+          background: white;
+          padding: 0;
+        }
+        .estimate-container {
+          box-shadow: none;
+          padding: 20px;
+        }
       }
     </style>
   `;
 
-    var bodyContent = '<div class="header">';
-    bodyContent += '<div class="logo">TB</div>';
-    bodyContent += '<div class="company-info">';
-    bodyContent += '<div class="company-name">TRADER BROTHERS LTD</div>';
-    bodyContent += '<div class="company-details">';
-    bodyContent += '8 Craigour Terrace<br>';
-    bodyContent += 'Edinburgh, EH17 7PB<br>';
-    bodyContent += '📞: 07979309957<br>';
-    bodyContent += '✉: traderbrotherslimited@gmail.com';
-    bodyContent += '</div></div></div>';
+    var bodyContent = `
+    <div class="estimate-container">
+      <div class="header">
+        <div class="company-info">
+          <div class="company-name">TR<span class="highlight">A</span>DER BROTHERS LTD</div>
+          <div class="company-details">
+            8 Craigour Terrace<br>
+            Edinburgh, EH17 7PB<br>
+            07979309957<br>
+            traderbrotherslimited@gmail.com
+          </div>
+        </div>
+        <div class="logo-container">
+          <img src="https://github.com/infotraderbrothers-lgtm/traderbrothers-assets-logo/blob/main/Trader%20Brothers.png?raw=true" alt="Trader Brothers Logo" class="logo">
+        </div>
+      </div>
 
-    bodyContent += '<div class="info-section">';
-    bodyContent += '<div class="client-info">';
-    bodyContent += '<h3>Estimate for</h3>';
-    bodyContent += '<p>' + clientName + '<br>';
-    bodyContent += projectName + '<br>';
-    bodyContent += projectAddress;
-    if (clientPhone) bodyContent += '<br>' + clientPhone;
-    bodyContent += '</p></div>';
-    bodyContent += '<div class="estimate-details">';
-    bodyContent += '<div><strong>Date:</strong> ' + quoteDate + '</div>';
-    bodyContent += '<div><strong>Estimate #:</strong> ' + estNumber + '</div>';
-    bodyContent += '<div><strong>Customer ID:</strong> ' + customerId + '</div>';
-    bodyContent += '<div><strong>Expiry date:</strong> ' + expiryDate + '</div>';
-    bodyContent += '</div></div>';
+      <div class="estimate-banner">Estimate for</div>
 
-    bodyContent += '<table class="items-table">';
-    bodyContent += '<thead><tr>';
-    bodyContent += '<th style="width: 55%;">Description</th>';
-    bodyContent += '<th style="text-align: center; width: 10%;">Qty</th>';
-    bodyContent += '<th style="text-align: right; width: 17%;">Unit price</th>';
-    bodyContent += '<th style="text-align: right; width: 18%;">Total price</th>';
-    bodyContent += '</tr></thead><tbody>';
+      <div class="info-section">
+        <div class="client-info">
+          <h3>${clientName}</h3>
+          <p>
+            ${projectName}<br>
+            ${projectAddress}${clientPhone ? '<br>' + clientPhone : ''}
+          </p>
+        </div>
 
-    for (var category in categories) {
-        bodyContent += '<tr class="category-row">';
-        bodyContent += '<td colspan="4">' + category + '</td></tr>';
-        var categoryItems = categories[category];
-        for (var k = 0; k < categoryItems.length; k++) {
-            var item = categoryItems[k];
-            bodyContent += '<tr>';
-            bodyContent += '<td>' + item.description + '</td>';
-            bodyContent += '<td style="text-align: center;">' + item.quantity + '</td>';
-            bodyContent += '<td style="text-align: right;">£' + item.unitPrice.toFixed(2) + '</td>';
-            bodyContent += '<td style="text-align: right;">£' + item.lineTotal.toFixed(2) + '</td>';
-            bodyContent += '</tr>';
-        }
+        <div class="estimate-details">
+          <table class="details-table">
+            <tr>
+              <td class="detail-label">Date:</td>
+              <td class="detail-value">${quoteDate}</td>
+            </tr>
+            <tr>
+              <td class="detail-label">Estimate #:</td>
+              <td class="detail-value">${estNumber}</td>
+            </tr>
+            <tr>
+              <td class="detail-label">Customer Ref:</td>
+              <td class="detail-value">${customerId}</td>
+            </tr>
+            <tr>
+              <td class="detail-label">Expiry Date:</td>
+              <td><span class="expiry-date">${expiryDate}</span></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Qty</th>
+            <th>Unit price</th>
+            <th>Total price</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        bodyContent += `
+          <tr>
+            <td>${item.description}</td>
+            <td>${item.quantity}</td>
+            <td>£${item.unitPrice.toFixed(2)}</td>
+            <td>£${item.lineTotal.toFixed(2)}</td>
+          </tr>`;
     }
 
-    bodyContent += '</tbody></table>';
+    bodyContent += `
+        </tbody>
+      </table>
 
-    bodyContent += '<div class="notes-section">';
-    bodyContent += '<h3>Notes:</h3>';
-    bodyContent += '<div>1. Estimate valid for 31 days</div>';
-    bodyContent += '<div>2. Deposit of ' + depositPercent + '% is required to secure start date</div>';
-    bodyContent += '<div>3. Extra works to be charged accordingly</div>';
-    var customNotes = document.getElementById('customNotes').value;
-    if (customNotes) {
-        bodyContent += '<div>4. ' + customNotes + '</div>';
-    }
-    bodyContent += '</div>';
+      <div class="notes-section">
+        <h3>Notes:</h3>
+        <ol>
+          <li>Estimate valid for 31 days</li>
+          <li>Payment of ${depositPercent}% is required to secure start date</li>
+          <li>Pending to be supplied by customer</li>
+          <li>Any extras to be charged accordingly</li>
+        </ol>
+      </div>
 
-    bodyContent += '<div class="totals-section">';
-    bodyContent += '<div class="totals-box">';
-    bodyContent += '<div class="total-row subtotal"><span><strong>Subtotal</strong></span><span>£' + subtotal.toFixed(2) + '</span></div>';
-    bodyContent += '<div class="total-row"><span><strong>VAT (20%)</strong></span><span>£' + vat.toFixed(2) + '</span></div>';
-    bodyContent += '<div class="total-row final"><span><strong>TOTAL</strong></span><span>£' + total.toFixed(2) + '</span></div>';
-    bodyContent += '</div></div>';
+      <div class="totals-section">
+        <div class="totals-box">
+          <div class="total-row subtotal">
+            <span>Subtotal</span>
+            <span>£${subtotal.toFixed(2)}</span>
+          </div>
+          <div class="total-row vat">
+            <span>VAT</span>
+            <span>£${vat.toFixed(2)}</span>
+          </div>
+          <div class="total-row final">
+            <span>Total</span>
+            <span>£${total.toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
 
-    bodyContent += '<div class="footer-note">';
-    bodyContent += 'If you have any questions about this estimate, please contact traderbrotherslimited@gmail.com, or 07979309957.';
-    bodyContent += '<div class="thank-you">Thank you for your business</div>';
-    bodyContent += '</div>';
+      <div class="footer-note">
+        If you have any questions about this estimate, please contact<br>
+        Trader Brothers on 07448835577
+        <div class="thank-you">Thank you for your business</div>
+      </div>
+    </div>`;
 
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Estimate</title>
+  <title>Estimate - Trader Brothers Ltd</title>
   ${styles}
 </head>
 <body>
