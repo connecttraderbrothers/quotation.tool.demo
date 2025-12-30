@@ -248,6 +248,7 @@ function previewQuote() {
     var clientName = document.getElementById('clientName').value || '[Client Name]';
     var clientPhone = document.getElementById('clientPhone').value;
     var projectAddress = document.getElementById('projectAddress').value || '[Project Address]';
+    var projectPostcode = document.getElementById('projectPostcode').value;
     var customerId = document.getElementById('customerId').value || 'N/A';
     var depositPercent = document.getElementById('depositPercent').value || '30';
     
@@ -324,7 +325,7 @@ function previewQuote() {
         <div class="client-info-preview">
           <h3>${clientName}</h3>
           <p>
-            ${projectAddress}${clientPhone ? '<br>' + clientPhone : ''}
+            ${projectAddress}${projectPostcode ? '<br>' + projectPostcode : ''}${clientPhone ? '<br>' + clientPhone : ''}
           </p>
         </div>
 
