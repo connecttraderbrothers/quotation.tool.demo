@@ -11,8 +11,8 @@ function generateCompleteHTML() {
     var depositPercent = document.getElementById('depositPercent').value || '30';
     
     var today = new Date();
-    var quoteDate = today.toLocaleDateString('en-GB');
-    var expiryDate = new Date(today.getTime() + 31 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB');
+    var quoteDate = today.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, ' ');
+    var expiryDate = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, ' ');
     var estNumber = String(estimateNumber).padStart(4, '0');
     
     var subtotal = 0;
@@ -86,47 +86,37 @@ function generateCompleteHTML() {
         display: flex;
         justify-content: space-between;
         margin-bottom: 30px;
+        align-items: flex-start;
+        gap: 100px;
       }
       .client-info {
-        flex: 1;
-      }
-      .client-info h3 {
-        font-size: 12px;
-        color: #666;
-        margin-bottom: 8px;
-      }
-      .client-info p {
-        font-size: 13px;
-        line-height: 1.5;
-        color: #333;
+        flex: 0 0 auto;
       }
       .estimate-details {
-        flex: 0 0 250px;
+        flex: 0 0 auto;
       }
-      .details-table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-      .details-table td {
-        padding: 8px 10px;
+      .info-row {
         font-size: 13px;
+        line-height: 2;
+        display: flex;
+        align-items: center;
       }
-      .detail-label {
-        color: #666;
-        text-align: left;
-        width: 120px;
-      }
-      .detail-value {
-        font-weight: bold;
+      .info-label {
         color: #333;
-        text-align: left;
+        font-weight: bold;
+        margin-right: 10px;
+        min-width: 80px;
+      }
+      .info-value {
+        color: #333;
+        font-weight: normal;
       }
       .expiry-date {
         background: linear-gradient(135deg, #bc9c22, #d4af37);
         padding: 5px 10px;
         display: inline-block;
         color: white;
-        font-weight: bold;
+        font-weight: normal;
       }
       .items-table {
         width: 100%;
@@ -240,14 +230,14 @@ function generateCompleteHTML() {
         <div class="company-info">
           <div class="company-name">TR<span class="highlight">A</span>DER BROTHERS LTD</div>
           <div class="company-details">
-            8 Craigour Terrace<br>
-            Edinburgh, EH17 7PB<br>
-            07979309957<br>
-            traderbrotherslimited@gmail.com
+            45 Riverside Business Park<br>
+            London, SW18 4UQ<br>
+            020 7946 0958<br>
+            info@traderbrothers.co.uk
           </div>
         </div>
         <div class="logo-container">
-          <img src="https://github.com/connecttraderbrothers/omega.app.icon/blob/main/icon-512x512.png?raw=true" alt="Omega Logo" class="logo">
+          <img src="https://github.com/infotraderbrothers-lgtm/traderbrothers-assets-logo/blob/main/Trader%20Brothers.png?raw=true" alt="Trader Brothers Logo" class="logo">
         </div>
       </div>
 
@@ -255,31 +245,41 @@ function generateCompleteHTML() {
 
       <div class="info-section">
         <div class="client-info">
-          <h3>${clientName}</h3>
-          <p>
-            ${projectAddress}${projectPostcode ? '<br>' + projectPostcode : ''}${clientPhone ? '<br>' + clientPhone : ''}
-          </p>
+          <div class="info-row">
+            <span class="info-label">Name:</span>
+            <span class="info-value">${clientName}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Address:</span>
+            <span class="info-value">${projectAddress}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Postcode:</span>
+            <span class="info-value">${projectPostcode || 'N/A'}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Phone:</span>
+            <span class="info-value">${clientPhone || 'N/A'}</span>
+          </div>
         </div>
 
         <div class="estimate-details">
-          <table class="details-table">
-            <tr>
-              <td class="detail-label">Date:</td>
-              <td class="detail-value">${quoteDate}</td>
-            </tr>
-            <tr>
-              <td class="detail-label">Estimate #:</td>
-              <td class="detail-value">${estNumber}</td>
-            </tr>
-            <tr>
-              <td class="detail-label">Customer Ref:</td>
-              <td class="detail-value">${customerId}</td>
-            </tr>
-            <tr>
-              <td class="detail-label">Expiry Date:</td>
-              <td><span class="expiry-date">${expiryDate}</span></td>
-            </tr>
-          </table>
+          <div class="info-row">
+            <span class="info-label">Date:</span>
+            <span class="info-value">${quoteDate}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Estimate #:</span>
+            <span class="info-value">${estNumber}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Customer ID:</span>
+            <span class="info-value">${customerId}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Expiry Date:</span>
+            <span class="expiry-date">${expiryDate}</span>
+          </div>
         </div>
       </div>
 
@@ -312,10 +312,10 @@ function generateCompleteHTML() {
       <div class="notes-section">
         <h3>Notes:</h3>
         <ol>
-          <li>Estimate valid for 31 days</li>
+          <li>Estimate valid for 30 days</li>
           <li>Payment of ${depositPercent}% is required to secure start date</li>
-          <li>Pending to be supplied by customer</li>
-          <li>Any extras to be charged accordingly</li>
+          <li>Parking to be supplied by customer</li>
+          <li>Any additional work to be charged accordingly</li>
         </ol>
       </div>
 
@@ -338,7 +338,7 @@ function generateCompleteHTML() {
 
       <div class="footer-note">
         If you have any questions about this estimate, please contact<br>
-        Trader Brothers on 07448835577
+        us at traderbrotherslimited@gmail.com, or 07979 309957 
         <div class="thank-you">Thank you for your business</div>
       </div>
     </div>`;
