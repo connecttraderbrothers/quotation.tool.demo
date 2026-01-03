@@ -422,3 +422,16 @@ function previewQuote() {
     document.getElementById('previewBody').innerHTML = previewHtml;
     document.getElementById('previewModal').style.display = 'block';
 }
+
+// Function to close the preview modal
+function closePreview() {
+    document.getElementById('previewModal').style.display = 'none';
+}
+
+// Close modal when clicking outside of it
+window.onclick = function(event) {
+    var modal = document.getElementById('previewModal');
+    if (event.target === modal) {
+        closePreview();
+    }
+}
