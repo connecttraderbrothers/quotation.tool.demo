@@ -422,14 +422,3 @@ function previewQuote() {
     document.getElementById('previewBody').innerHTML = previewHtml;
     document.getElementById('previewModal').style.display = 'block';
 }
-
-function closePreview() {
-    document.getElementById('previewModal').style.display = 'none';
-}
-
-window.onclick = function(event) {
-    var modal = document.getElementById('previewModal');
-    if (event.target == modal) {
-        closePreview();
-    }
-}
