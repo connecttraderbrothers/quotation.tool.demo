@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- MATRIX BACKGROUND CANVAS -->
+    <canvas id="matrix"></canvas>
+
     <!-- SPLASH SCREEN -->
     <div id="splashScreen" class="splash-container">
         <div class="logo-wrapper">
@@ -308,6 +311,70 @@
             </div>
         </div>
     </div>
+
+    <!-- Matrix Animation Script -->
+    <script>
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas to full screen
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Characters to use - mix of katakana, Latin letters, and numbers
+        const chars = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
+        const charArray = chars.split('');
+
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+
+        // Array to store y-position of each drop
+        const drops = [];
+        for (let i = 0; i < columns; i++) {
+            drops[i] = Math.floor(Math.random() * canvas.height / fontSize);
+        }
+
+        function draw() {
+            // Add semi-transparent black to create fade effect
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                // Random character from array
+                const char = charArray[Math.floor(Math.random() * charArray.length)];
+                
+                // Gradient effect - brighter at the front
+                const gradient = Math.min(255, 100 + drops[i] * 10);
+                ctx.fillStyle = `rgb(0, ${gradient}, 0)`;
+                
+                // Draw the character
+                ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+
+                // Reset drop to top randomly or when it goes off screen
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+
+                drops[i]++;
+            }
+        }
+
+        // Run the animation
+        const matrixInterval = setInterval(draw, 35);
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            drops.length = 0;
+            const newColumns = canvas.width / fontSize;
+            for (let i = 0; i < newColumns; i++) {
+                drops[i] = Math.floor(Math.random() * canvas.height / fontSize);
+            }
+        });
+    </script>
 
     <script src="navigation.js"></script>
     <script src="pdf_generator.js"></script>
